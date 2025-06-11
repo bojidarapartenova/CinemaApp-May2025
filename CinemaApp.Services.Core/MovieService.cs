@@ -55,6 +55,14 @@ namespace CinemaApp.Services.Core
                 })
                 .ToListAsync();
 
+            foreach (AllMoviesIndexViewModel movie in allMovies)
+            {
+                if (String.IsNullOrEmpty(movie.ImageUrl))
+                {
+                    movie.ImageUrl = $"/images/{NoImageUrl}";
+                }
+            }
+
             return allMovies;
         }
     }
