@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CinemaApp.Data;
+using CinemaApp.Data.Models;
 using CinemaApp.Services.Core.Interfaces;
 using CinemaApp.Web.ViewModels.Movie;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +19,25 @@ namespace CinemaApp.Services.Core
         public MovieService(CinemaAppDbContext dbContext)
         {
             this.dbContext = dbContext;
+        }
+
+        public async Task AddMovieAsync(MovieFormInputModel inputModel)
+        {
+            var movie = new Movie
+            {
+                Title = inputModel.Title,
+                Genre = inputModel.Genre,
+                Director = inputModel.Director,
+                Description = inputModel.Description,
+                Duration = inputModel.Duration,
+                ReleaseDate = DateOnly
+                    .ParseExact(inputModel.ReleaseDate, AppDateFormat,
+                        CultureInfo.InvariantCulture, DateTimeStyles.None),
+                ImageUrl = inputModel.ImageUrl
+            };
+
+            await dbContext.Movies.AddAsync(movie);
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<AllMoviesIndexViewModel>> GetAllMoviesAsync()

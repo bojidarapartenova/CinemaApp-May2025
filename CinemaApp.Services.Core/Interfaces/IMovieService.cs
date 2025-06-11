@@ -10,5 +10,7 @@ namespace CinemaApp.Services.Core.Interfaces
     public interface IMovieService
     {
         Task<IEnumerable<AllMoviesIndexViewModel>> GetAllMoviesAsync();
+
+        Task AddMovieAsync(MovieFormInputModel inputModel);
     }
 }
