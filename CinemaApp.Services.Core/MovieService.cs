@@ -40,6 +40,33 @@ namespace CinemaApp.Services.Core
             await dbContext.SaveChangesAsync();
         }
 
+        public async Task<bool> EditMovieAsync(MovieFormInputModel inputModel)
+        {
+            Movie? editableMovie = await dbContext
+                .Movies
+                .SingleOrDefaultAsync(m => m.Id.ToString() == inputModel.Id);
+
+            if(editableMovie == null)
+            {
+                return false;
+            }
+
+            DateOnly movieReleaseDate = DateOnly
+                .ParseExact(inputModel.ReleaseDate, AppDateFormat, CultureInfo.InvariantCulture,
+                DateTimeStyles.None);
+
+            editableMovie.Title = inputModel.Title;
+            editableMovie.Description=inputModel.Description;
+            editableMovie.Director = inputModel.Director;
+            editableMovie.Duration=inputModel.Duration;
+            editableMovie.Genre=inputModel.Genre;
+            editableMovie.ImageUrl=inputModel.ImageUrl ?? $"/images/{NoImageUrl}";
+            editableMovie.ReleaseDate=movieReleaseDate;
+
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<IEnumerable<AllMoviesIndexViewModel>> GetAllMoviesAsync()
         {
             IEnumerable<AllMoviesIndexViewModel> allMovies = await this.dbContext
@@ -64,6 +91,35 @@ namespace CinemaApp.Services.Core
             }
 
             return allMovies;
+        }
+
+        public async Task<MovieFormInputModel?> GetEditableMovieByIdAsync(string? id)
+        {
+            MovieFormInputModel? movieDetails = null;
+
+            bool isValidId = Guid.TryParse(id, out Guid movieId);
+
+            if (isValidId)
+            {
+                movieDetails = await this.dbContext
+                    .Movies
+                    .AsNoTracking()
+                    .Where(m => m.Id == movieId)
+                    .Select(m => new MovieFormInputModel()
+                    {
+                        Id=m.Id.ToString(),
+                        Description = m.Description,
+                        Director = m.Director,
+                        Duration = m.Duration,
+                        Genre = m.Genre,
+                        ImageUrl = m.ImageUrl ?? $"/images/{NoImageUrl}",
+                        ReleaseDate = m.ReleaseDate.ToString(AppDateFormat),
+                        Title = m.Title
+                    })
+                    .SingleOrDefaultAsync();
+            }
+
+            return movieDetails;
         }
 
         public async Task<MovieDetailsViewModel?> GetMovieDetailsByIdAsync(string? id)
