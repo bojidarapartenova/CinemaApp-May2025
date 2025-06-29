@@ -18,6 +18,8 @@
         {
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(Assembly.GetCallingAssembly());
+
+            builder.Entity<Movie>().HasQueryFilter(m => !m.IsDeleted);
         }
     }
 }

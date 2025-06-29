@@ -59,6 +59,7 @@ namespace CinemaApp.Web
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
