@@ -18,5 +18,7 @@ namespace CinemaApp.Data.Models
         public string Description { get; set; } = null!;
         public string? ImageUrl { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public virtual ICollection<UserMovie> UserWatchlists { get; set; }=
+            new HashSet<UserMovie>();
     }
 }
